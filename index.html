@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Médica - Sistema Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f3e7fd 0%, #e7f3fd 50%, #fce7f3 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo::before {
+            content: "🏥";
+            font-size: 40px;
+        }
+        
+        h1 {
+            color: #8b5cf6;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .credentials {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .credentials h3 {
+            color: #8b5cf6;
+            margin-bottom: 15px;
+        }
+        
+        .credential-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .dashboard {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h3 {
+            color: #8b5cf6;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .user-info {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .show {
+            display: block;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #fcc;
+        }
+        
+        .success {
+            background: #efe;
+            color: #0c0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #cfc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo"></div>
+            <h1>Clínica Médica</h1>
+            <p class="subtitle">Sistema de Gestão Online</p>
+        </div>
+        
+        <div id="loginSection">
+            <div class="login-container">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #8b5cf6;">
+                    🔐 Acesso ao Sistema
+                </h2>
+                
+                <div id="message"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" placeholder="seu@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" placeholder="Digite sua senha" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userType">Tipo de Usuário</label>
+                        <select id="userType" required>
+                            <option value="">Selecione...</option>
+                            <option value="FINANCEIRO">Financeiro</option>
+                            <option value="DRA_JOSIANE">Dra. Josiane Canali</option>
+                            <option value="SECRETARIA">Secretaria</option>
+                            <option value="DESENVOLVEDOR">Desenvolvedor</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn">
+                        🚀 Entrar no Sistema
+                    </button>
+                </form>
+                
+                <div class="credentials">
+                    <h3>📋 Credenciais de Teste:</h3>
+                    <div class="credential-item">
+                        <strong>Dra. Josiane:</strong> drajosiane@clinica.com / Dra.Josi@2024!
+                    </div>
+                    <div class="credential-item">
+                        <strong>Financeiro:</strong> financeiro@clinica.com / Fin@nc2024#
+                    </div>
+                    <div class="credential-item">
+                        <strong>Secretaria:</strong> secretaria@clinica.com / Sec@2024$
+                    </div>
+                    <div class="credential-item">
+                        <strong>Desenvolvedor:</strong> dev@clinica.com / Dev@2024&
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="dashboardSection" class="dashboard hidden">
+            <div class="user-info">
+                <h2>👋 Bem-vindo(a), <span id="userName"></span>!</h2>
+                <p>Tipo: <span id="userType"></span></p>
+            </div>
+            
+            <div class="card">
+                <h3>📅 Consultas de Hoje</h3>
+                <p>Você tem <strong>2 consultas</strong> agendadas para hoje.</p>
+                <p>Próxima consulta: <strong>14:30</strong></p>
+            </div>
+            
+            <div class="card">
+                <h3>👥 Pacientes Ativos</h3>
+                <p>Total de <strong>486 pacientes</strong> em tratamento.</p>
+                <p><strong>24 novos</strong> pacientes este mês.</p>
+            </div>
+            
+            <div class="card">
+                <h3>💰 Faturamento do Mês</h3>
+                <p>Total recebido: <strong>R$ 24.500</strong></p>
+                <p>Crescimento de <strong>+8%</strong> vs mês anterior.</p>
+            </div>
+            
+            <div class="card">
+                <h3>📊 Taxa de Comparecimento</h3>
+                <p>Taxa atual: <strong>92%</strong></p>
+                <p>Excelente! Continue com o bom trabalho.</p>
+            </div>
+            
+            <button class="btn" onclick="logout()" style="background: #dc2626; margin-top: 30px;">
+                🚪 Sair do Sistema
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let currentUser = null;
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const userType = document.getElementById('userType').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password, userType })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.user;
+                    showMessage('Login realizado com sucesso!', 'success');
+                    setTimeout(() => {
+                        showDashboard();
+                    }, 1000);
+                } else {
+                    showMessage(data.error || 'Erro ao fazer login', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro de conexão. Tente novamente.', 'error');
+            }
+        });
+        
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userType').textContent = getUserTypeLabel(currentUser.userType);
+        }
+        
+        function getUserTypeLabel(type) {
+            const labels = {
+                'FINANCEIRO': 'Financeiro',
+                'DRA_JOSIANE': 'Dra. Josiane Canali',
+                'SECRETARIA': 'Secretaria',
+                'DESENVOLVEDOR': 'Desenvolvedor'
+            };
+            return labels[type] || type;
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+            showMessage('Logout realizado com sucesso!', 'success');
+        }
+    </script>
+</body>
+</html>

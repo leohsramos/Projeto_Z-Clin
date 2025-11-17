@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  userType  UserType @default(SECRETARIA)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relações
+  appointments      Appointment[]
+  patientRecords    PatientRecord[]
+  financialRecords  FinancialRecord[]
+
+  @@map("users")
+}
+
+model Patient {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?  @unique
+  phone       String?
+  cpf         String?  @unique
+  birthDate   DateTime?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relações
+  appointments     Appointment[]
+  medicalRecords   MedicalRecord[]
+  documents        PatientDocument[]
+  payments         Payment[]
+
+  @@map("patients")
+}
+
+model Procedure {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  value       Float
+  duration    Int      // em minutos
+  materials   String?  // materiais necessários
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relações
+  appointments Appointment[]
+
+  @@map("procedures")
+}
+
+model Appointment {
+  id          String           @id @default(cuid())
+  date        DateTime
+  time        String           // formato HH:mm
+  status      AppointmentStatus @default(AGENDADO)
+  notes       String?
+  value       Float?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relações
+  patientId    String
+  patient      Patient    @relation(fields: [patientId], references: [id])
+  
+  procedureId  String?
+  procedure    Procedure? @relation(fields: [procedureId], references: [id])
+  
+  doctorId     String
+  doctor       User       @relation(fields: [doctorId], references: [id])
+  
+  payments     Payment[]
+
+  @@map("appointments")
+}
+
+model MedicalRecord {
+  id          String   @id @default(cuid())
+  patientId   String
+  appointmentId String?
+  date        DateTime @default(now())
+  symptoms    String?
+  diagnosis   String?
+  prescription String?
+  observations String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relações
+  patient      Patient      @relation(fields: [patientId], references: [id])
+
+  @@map("medical_records")
+}
+
+model PatientDocument {
+  id          String   @id @default(cuid())
+  patientId   String
+  name        String
+  type        String   // ex: "Exame", "Receita", "Laudo"
+  filePath    String
+  uploadedAt  DateTime @default(now())
+
+  // Relações
+  patient     Patient  @relation(fields: [patientId], references: [id])
+
+  @@map("patient_documents")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  appointmentId String
+  amount        Float
+  paymentMethod PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  discount      Float         @default(0)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relações
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  patient       Patient     @relation(fields: [appointmentId], references: [id])
+
+  @@map("payments")
+}
+
+model PatientRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  patientId   String
+  action      String   // ex: "CREATE", "UPDATE", "DELETE"
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relações
+  user        User    @relation(fields: [userId], references: [id])
+
+  @@map("patient_records")
+}
+
+model FinancialRecord {
+  id          String           @id @default(cuid())
+  userId      String
+  type        FinancialType
+  description String
+  amount      Float
+  date        DateTime
+  createdAt   DateTime         @default(now())
+
+  // Relações
+  user        User             @relation(fields: [userId], references: [id])
+
+  @@map("financial_records")
+}
+
+// Enums
+enum UserType {
+  FINANCEIRO
+  DRA_JOSIANE
+  SECRETARIA
+  DESENVOLVEDOR
+}
+
+enum AppointmentStatus {
+  AGENDADO
+  CONFIRMADO
+  REALIZADO
+  FALTOU
+  CANCELADO
+}
+
+enum PaymentMethod {
+  PIX
+  CARTAO
+  DINHEIRO
+  BOLETO
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum FinancialType {
+  INCOME
+  EXPENSE
+}
